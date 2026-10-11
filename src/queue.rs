@@ -18,6 +18,12 @@ pub struct Queue<T: Clone + Send + 'static> {
     closed_promise: Promise<String>,
 }
 
+impl<T: Clone + Send + 'static> Default for Queue<T> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<T: Clone + Send + 'static> Queue<T> {
     pub fn new() -> Self {
         let (ends_d, ends_p) = defer::<Node<T>>();
