@@ -64,9 +64,9 @@ fn any_all_rejected_reports() {
             String::new()
         },
     );
-    d0.reject("first");
+    d0.reject("first".to_string());
     std::thread::sleep(Duration::from_millis(50));
-    d1.reject("second");
+    d1.reject("second".to_string());
     let err = recv(rx);
     assert!(err.contains("all promises were rejected"), "{err}");
     assert!(err.contains("second"), "{err}");
