@@ -1,5 +1,6 @@
 pub mod combinators;
 pub mod ext;
+pub mod queue;
 
 use std::sync::{Arc, Mutex};
 use std::thread;
