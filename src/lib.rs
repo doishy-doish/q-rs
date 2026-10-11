@@ -42,7 +42,7 @@ fn settle<T: Clone + Send + 'static>(inner: &Arc<Mutex<Inner<T>>>, outcome: Outc
         let mut guard = inner.lock().unwrap();
         match &mut guard.state {
             State::Pending(cbs) => {
-                let taken = std::mem::replace(cbs, Vec::new());
+                let taken = std::mem::take(cbs);
                 guard.state = State::Done(outcome.clone());
                 taken
             }
