@@ -1,13 +1,15 @@
 use crate::{attach, defer, settle, Deferred, Outcome, Promise};
 use std::sync::{Arc, Mutex, OnceLock};
 
-static ONERROR: OnceLock<Mutex<Option<Arc<dyn Fn(String) + Send + Sync>>>> = OnceLock::new();
+pub type RejectionHook = Arc<dyn Fn(String) + Send + Sync>;
 
-fn onerror_slot() -> &'static Mutex<Option<Arc<dyn Fn(String) + Send + Sync>>> {
+static ONERROR: OnceLock<Mutex<Option<RejectionHook>>> = OnceLock::new();
+
+fn onerror_slot() -> &'static Mutex<Option<RejectionHook>> {
     ONERROR.get_or_init(|| Mutex::new(None))
 }
 
-pub fn set_onerror(hook: Option<Arc<dyn Fn(String) + Send + Sync>>) {
+pub fn set_onerror(hook: Option<RejectionHook>) {
     *onerror_slot().lock().unwrap() = hook;
 }
 
