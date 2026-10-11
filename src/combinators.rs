@@ -98,7 +98,7 @@ impl<T: Clone + Send + 'static> Promise<Vec<T>> {
     }
 }
 
-struct AllShared<T: Send + 'static> {
+struct AllShared<T: Clone + Send + 'static> {
     left: usize,
     settled: bool,
     out: Vec<Option<T>>,
@@ -155,7 +155,7 @@ pub fn all<T: Clone + Send + 'static>(promises: Vec<Promise<T>>) -> Promise<Vec<
     p
 }
 
-struct AnyShared<T: Send + 'static> {
+struct AnyShared<T: Clone + Send + 'static> {
     left: usize,
     settled: bool,
     deferred: Option<Deferred<T>>,
