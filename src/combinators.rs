@@ -198,7 +198,7 @@ pub fn any<T: Clone + Send + 'static>(promises: Vec<Promise<T>>) -> Promise<T> {
                             guard.settled = true;
                             let msg = format!(
                                 "Q can't get fulfillment value from any promise, all \
-                                 promises were rejected. Last error: {e}"
+                                 promises were rejected. Last error message: {e}"
                             );
                             if let Some(dd) = guard.deferred.take() {
                                 dd.reject(msg);
@@ -233,7 +233,7 @@ pub fn all_settled<T: Clone + Send + 'static>(
     all(wrapped)
 }
 
-fn panic_message(payload: Box<dyn std::any::Any + Send>) -> String {
+pub(crate) fn panic_message(payload: Box<dyn std::any::Any + Send>) -> String {
     if let Some(s) = payload.downcast_ref::<&str>() {
         (*s).to_string()
     } else if let Some(s) = payload.downcast_ref::<String>() {
