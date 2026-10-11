@@ -250,7 +250,8 @@ where
 {
     let (d, p) = defer::<U>();
     std::thread::spawn(move || {
-        match std::panic::catch_unwind(std::panic::AssertUnwindSafe(f)) {
+        let outcome = std::panic::catch_unwind(std::panic::AssertUnwindSafe(f));
+        match outcome {
             Ok(v) => d.resolve(v),
             Err(payload) => d.reject(panic_message(payload)),
         }
