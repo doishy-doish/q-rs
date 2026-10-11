@@ -130,9 +130,8 @@ impl<T: Clone + Send + 'static> Promise<T> {
             &self,
             Box::new(move |o| match o {
                 Outcome::Ok(v) => {
-                    let waited = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                        observe(&v)
-                    }));
+                    let waited =
+                        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| observe(&v)));
                     let waiter = match waited {
                         Ok(w) => w,
                         Err(payload) => {
