@@ -1,8 +1,10 @@
+pub mod combinators;
+
 use std::sync::{Arc, Mutex};
 use std::thread;
 
 #[derive(Clone)]
-enum Outcome<T> {
+pub(crate) enum Outcome<T> {
     Ok(T),
     Err(String),
 }
@@ -13,7 +15,7 @@ enum State<T> {
 }
 
 struct Inner<T> {
-    state: State<T>,
+    pub(crate) state: State<T>,
 }
 
 #[derive(Clone)]
@@ -37,7 +39,7 @@ pub fn defer<T: Clone + Send + 'static>() -> (Deferred<T>, Promise<T>) {
     )
 }
 
-fn settle<T: Clone + Send + 'static>(inner: &Arc<Mutex<Inner<T>>>, outcome: Outcome<T>) {
+pub(crate) fn settle<T: Clone + Send + 'static>(inner: &Arc<Mutex<Inner<T>>>, outcome: Outcome<T>) {
     let callbacks = {
         let mut guard = inner.lock().unwrap();
         match &mut guard.state {
@@ -56,7 +58,7 @@ fn settle<T: Clone + Send + 'static>(inner: &Arc<Mutex<Inner<T>>>, outcome: Outc
     });
 }
 
-fn attach<T: Clone + Send + 'static>(
+pub(crate) fn attach<T: Clone + Send + 'static>(
     promise: &Promise<T>,
     run: Box<dyn FnOnce(Outcome<T>) + Send>,
 ) {
