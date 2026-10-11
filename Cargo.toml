@@ -1,0 +1,6 @@
+[package]
+name = "q-rs"
+version = "0.1.0"
+edition = "2021"
+description = "Rust port of kriskowal/q promise library (parity-tested)"
+license = "MIT"
