@@ -114,9 +114,7 @@ fn fin_async_waits_for_callback_promise() {
 #[test]
 fn fin_async_new_rejection_replaces_outcome() {
     let (tx, rx) = channel();
-    resolve("foo")
-        .fin_async(|| reject::<()>("boo"))
-        .then_full(
+    resolve("foo").fin_async(|| reject::<()>("boo")).then_full(
             move |v| v.to_string(),
             move |e| {
                 tx.send(e).unwrap();
@@ -129,9 +127,7 @@ fn fin_async_new_rejection_replaces_outcome() {
 #[test]
 fn fin_async_forwards_original_rejection() {
     let (tx, rx) = channel();
-    reject::<&str>("evil")
-        .fin_async(|| later(20))
-        .then_full(
+    reject::<&str>("evil").fin_async(|| later(20)).then_full(
             move |v| v.to_string(),
             move |e| {
                 tx.send(e).unwrap();
@@ -188,8 +184,7 @@ fn later_and_delay_value() {
 fn all_same_promise_twice_resolves_once_each() {
     let (d, p) = defer::<i32>();
     let (tx, rx) = channel();
-    all(vec![p.clone(), p])
-        .then(move |_| tx.send(true).unwrap());
+    all(vec![p.clone(), p]).then(move |_| tx.send(true).unwrap());
     d.resolve(1);
     let _ = recv(rx);
 }
