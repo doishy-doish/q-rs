@@ -54,14 +54,19 @@ fn any_first_fulfillment_wins() {
 
 #[test]
 fn any_all_rejected_reports() {
+    let (d0, p0) = defer::<i32>();
+    let (d1, p1) = defer::<i32>();
     let (tx, rx) = channel();
-    any(vec![reject::<i32>("first"), reject::<i32>("second")]).then_full(
+    any(vec![p0, p1]).then_full(
         move |v| v.to_string(),
         move |e| {
             tx.send(e).unwrap();
             String::new()
         },
     );
+    d0.reject("first");
+    std::thread::sleep(Duration::from_millis(50));
+    d1.reject("second");
     let err = recv(rx);
     assert!(err.contains("all promises were rejected"), "{err}");
     assert!(err.contains("second"), "{err}");
