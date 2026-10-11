@@ -12,14 +12,24 @@ fn recv<T>(rx: std::sync::mpsc::Receiver<T>) -> T {
 fn resolve_promise_adopts_fulfillment() {
     let (d, p) = defer::<i32>();
     d.resolve_promise(resolve(10));
-    assert_eq!(p.inspect(), PromiseState::Fulfilled(10));
+    let (tx, rx) = channel();
+    p.then(move |v| tx.send(v).unwrap());
+    assert_eq!(recv(rx), 10);
 }
 
 #[test]
 fn resolve_promise_adopts_rejection() {
     let (d, p) = defer::<i32>();
     d.resolve_promise(reject::<i32>("nope"));
-    assert_eq!(p.inspect(), PromiseState::Rejected("nope".to_string()));
+    let (tx, rx) = channel();
+    p.then_full(
+        move |v| v.to_string(),
+        move |e| {
+            tx.send(e).unwrap();
+            String::new()
+        },
+    );
+    assert_eq!(recv(rx), "nope".to_string());
 }
 
 #[test]
