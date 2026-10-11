@@ -99,11 +99,11 @@ fn queue_repeated_get_after_close_same_error() {
     for _ in 0..2 {
         let (txe, rxe) = channel();
         q.get().then_full(
-        move |v| v.to_string(),
-        move |e| {
-            txe.send(e).unwrap();
-            String::new()
-        },
+            move |v| v.to_string(),
+            move |e| {
+                txe.send(e).unwrap();
+                String::new()
+            },
         );
         assert_eq!(recv(rxe), "bye".to_string());
     }
