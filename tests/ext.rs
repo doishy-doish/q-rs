@@ -115,12 +115,12 @@ fn fin_async_waits_for_callback_promise() {
 fn fin_async_new_rejection_replaces_outcome() {
     let (tx, rx) = channel();
     resolve("foo").fin_async(|| reject::<()>("boo")).then_full(
-            move |v| v.to_string(),
-            move |e| {
-                tx.send(e).unwrap();
-                String::new()
-            },
-        );
+        move |v| v.to_string(),
+        move |e| {
+            tx.send(e).unwrap();
+            String::new()
+        },
+    );
     assert_eq!(recv(rx), "boo".to_string());
 }
 
@@ -128,12 +128,12 @@ fn fin_async_new_rejection_replaces_outcome() {
 fn fin_async_forwards_original_rejection() {
     let (tx, rx) = channel();
     reject::<&str>("evil").fin_async(|| later(20)).then_full(
-            move |v| v.to_string(),
-            move |e| {
-                tx.send(e).unwrap();
-                String::new()
-            },
-        );
+        move |v| v.to_string(),
+        move |e| {
+            tx.send(e).unwrap();
+            String::new()
+        },
+    );
     assert_eq!(recv(rx), "evil".to_string());
 }
 
