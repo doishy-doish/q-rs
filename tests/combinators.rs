@@ -70,8 +70,7 @@ fn any_all_rejected_reports() {
 #[test]
 fn all_settled_mixed() {
     let (tx, rx) = channel();
-    all_settled(vec![resolve(1), reject::<i32>("x")])
-        .then(move |v| tx.send(v).unwrap());
+    all_settled(vec![resolve(1), reject::<i32>("x")]).then(move |v| tx.send(v).unwrap());
     assert_eq!(
         recv(rx),
         vec![
@@ -99,7 +98,9 @@ fn timeout_rejects_slow_promise() {
 #[test]
 fn timeout_passes_fast_promise() {
     let (tx, rx) = channel();
-    resolve(5).timeout(5000, None).then(move |v| tx.send(v).unwrap());
+    resolve(5)
+        .timeout(5000, None)
+        .then(move |v| tx.send(v).unwrap());
     assert_eq!(recv(rx), 5);
 }
 
