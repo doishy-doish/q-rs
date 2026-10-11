@@ -145,14 +145,19 @@ fn spec_any_first_staggered_fulfillment_wins() {
 
 #[test]
 fn spec_any_rejection_message_matches_q() {
+    let (d0, p0) = defer::<i32>();
+    let (d1, p1) = defer::<i32>();
     let (tx, rx) = channel();
-    any(vec![reject::<i32>("first"), reject::<i32>("second")]).then_full(
+    any(vec![p0, p1]).then_full(
         move |v| v.to_string(),
         move |e| {
             tx.send(e).unwrap();
             String::new()
         },
     );
+    d0.reject("first");
+    std::thread::sleep(Duration::from_millis(50));
+    d1.reject("second");
     assert_eq!(
         recv(&rx),
         "Q can't get fulfillment value from any promise, all promises were rejected. Last error message: second"
