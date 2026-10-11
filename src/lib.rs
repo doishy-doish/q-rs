@@ -56,7 +56,10 @@ fn settle<T: Clone + Send + 'static>(inner: &Arc<Mutex<Inner<T>>>, outcome: Outc
     });
 }
 
-fn attach<T: Clone + Send + 'static>(promise: &Promise<T>, run: Box<dyn FnOnce(Outcome<T>) + Send>) {
+fn attach<T: Clone + Send + 'static>(
+    promise: &Promise<T>,
+    run: Box<dyn FnOnce(Outcome<T>) + Send>,
+) {
     let done = {
         let guard = promise.inner.lock().unwrap();
         match &guard.state {
