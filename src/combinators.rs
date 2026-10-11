@@ -88,6 +88,26 @@ impl<T: Clone + Send + 'static> Promise<T> {
     }
 }
 
+impl<T: Clone + Send + 'static> Promise<T> {
+    pub fn tap<F>(self, f: F) -> Promise<T>
+    where
+        F: FnOnce(&T) + Send + 'static,
+    {
+        let (d, p) = defer::<T>();
+        attach(
+            &self,
+            Box::new(move |o| match o {
+                Outcome::Ok(v) => {
+                    f(&v);
+                    d.resolve(v);
+                }
+                Outcome::Err(e) => d.reject(e),
+            }),
+        );
+        p
+    }
+}
+
 impl<T: Clone + Send + 'static> Promise<Vec<T>> {
     pub fn spread<U, F>(self, f: F) -> Promise<U>
     where
