@@ -1,5 +1,8 @@
 use q_rs::{defer, reject, resolve, when};
-use std::sync::{Arc, atomic::{AtomicBool, Ordering}};
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+};
 use std::time::Duration;
 
 fn recv<T>(rx: std::sync::mpsc::Receiver<T>) -> T {
@@ -9,7 +12,9 @@ fn recv<T>(rx: std::sync::mpsc::Receiver<T>) -> T {
 #[test]
 fn resolve_chain() {
     let (tx, rx) = std::sync::mpsc::channel();
-    resolve(21).then(|x| x + 1).then(move |x| tx.send(x).unwrap());
+    resolve(21)
+        .then(|x| x + 1)
+        .then(move |x| tx.send(x).unwrap());
     assert_eq!(recv(rx), 22);
 }
 
