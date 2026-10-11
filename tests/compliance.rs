@@ -155,9 +155,9 @@ fn spec_any_rejection_message_matches_q() {
             String::new()
         },
     );
-    d0.reject("first");
+    d0.reject("first".to_string());
     std::thread::sleep(Duration::from_millis(50));
-    d1.reject("second");
+    d1.reject("second".to_string());
     assert_eq!(
         recv(&rx),
         "Q can't get fulfillment value from any promise, all promises were rejected. Last error message: second"
