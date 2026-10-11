@@ -170,8 +170,7 @@ fn spec_all_settled_empty() {
 fn spec_all_settled_mixed_snapshot_shapes() {
     use q_rs::combinators::Settlement;
     let (tx, rx) = channel();
-    all_settled(vec![resolve(2), reject::<i32>("nope")])
-        .then(move |v| tx.send(v).unwrap());
+    all_settled(vec![resolve(2), reject::<i32>("nope")]).then(move |v| tx.send(v).unwrap());
     assert_eq!(
         recv(&rx),
         vec![
@@ -189,14 +188,13 @@ fn spec_spread_destructures_and_forwards_rejection() {
         .then(move |v| tx.send(v).unwrap());
     assert_eq!(recv(&rx), 6);
     let (tx2, rx2) = channel();
-    all(vec![resolve(10), reject::<i32>("spread-err")])
-        .then_full(
-            move |v| format!("{v:?}"),
-            move |e| {
-                tx2.send(e).unwrap();
-                String::new()
-            },
-        );
+    all(vec![resolve(10), reject::<i32>("spread-err")]).then_full(
+        move |v| format!("{v:?}"),
+        move |e| {
+            tx2.send(e).unwrap();
+            String::new()
+        },
+    );
     assert_eq!(recv(&rx2), "spread-err".to_string());
 }
 
@@ -244,7 +242,9 @@ fn spec_done_empty_reason_reaches_hook_verbatim() {
 #[test]
 fn spec_timeout_fast_fulfill_and_fast_reject_pass_through() {
     let (tx, rx) = channel();
-    later(10).timeout(2000, None).then(move |_| tx.send(1).unwrap());
+    later(10)
+        .timeout(2000, None)
+        .then(move |_| tx.send(1).unwrap());
     assert_eq!(recv(&rx), 1);
     let (tx2, rx2) = channel();
     later(10)
@@ -321,20 +321,16 @@ fn spec_delay_value_and_delay_after_resolution() {
 #[test]
 fn spec_then_resolve_then_reject_analogues() {
     let (tx, rx) = channel();
-    later(20)
-        .then(|_| "foo")
-        .then(move |v| tx.send(v).unwrap());
+    later(20).then(|_| "foo").then(move |v| tx.send(v).unwrap());
     assert_eq!(recv(&rx), "foo");
     let (tx2, rx2) = channel();
-    reject::<&str>("boo")
-        .then(|_: &str| "foo")
-        .then_full(
-            move |v| v.to_string(),
-            move |e| {
-                tx2.send(e).unwrap();
-                String::new()
-            },
-        );
+    reject::<&str>("boo").then(|_: &str| "foo").then_full(
+        move |v| v.to_string(),
+        move |e| {
+            tx2.send(e).unwrap();
+            String::new()
+        },
+    );
     assert_eq!(recv(&rx2), "boo".to_string());
     let (tx3, rx3) = channel();
     later(5)
@@ -356,9 +352,9 @@ fn spec_assimilation_chain_collapses() {
 #[test]
 fn spec_nodeify_without_callback_stays_usable() {
     let (tx, rx) = channel();
-    resolve(3).nodeify(None::<fn(Result<i32, String>)>).then(move |v| {
-        tx.send(v).unwrap()
-    });
+    resolve(3)
+        .nodeify(None::<fn(Result<i32, String>)>)
+        .then(move |v| tx.send(v).unwrap());
     assert_eq!(recv(&rx), 3);
 }
 
@@ -384,10 +380,7 @@ fn spec_two_observers_each_fire_exactly_once() {
     p.clone().then(move |_| t1.send("a").unwrap());
     p.then(move |_| tx.send("b").unwrap());
     d.resolve(1);
-    let mut got = vec![
-        recv(&rx),
-        recv(&rx),
-    ];
+    let mut got = vec![recv(&rx), recv(&rx)];
     got.sort_unstable();
     assert_eq!(got, vec!["a", "b"]);
 }
@@ -396,7 +389,9 @@ fn spec_two_observers_each_fire_exactly_once() {
 fn spec_fin_async_delay_case() {
     let start = Instant::now();
     let (tx, rx) = channel();
-    resolve("foo").fin_async(|| later(250)).then(move |v| tx.send(v).unwrap());
+    resolve("foo")
+        .fin_async(|| later(250))
+        .then(move |v| tx.send(v).unwrap());
     assert_eq!(recv(&rx), "foo");
     assert!(start.elapsed() >= Duration::from_millis(250));
 }
